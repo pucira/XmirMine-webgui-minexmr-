@@ -38,7 +38,7 @@ def api(request):
 	response += "<p>Pending Payment = " + str(get_balance()) + "</p>"
 	for workers in get_worker()['workers']:
 		workerid = re.split(r'[.](?![^][]*\])', workers[0])
-		response += "<p>" + workerid[2] + ' =>  ' + str(workers[2]) + "</p>"
+		response += "<p>" + workerid[2] + ' : [ Number Of Workers = ' + str(workers[2]) + " , Accepted Shares = "+str(workers[3]) +"]</p>"
 	return HttpResponse(response)
 
 
