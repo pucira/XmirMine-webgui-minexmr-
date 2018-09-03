@@ -25,7 +25,7 @@ SECRET_KEY = ')ub!i=h))_pd9qm8x5rj7)l9z$!6iq(@l4oqkau5*k^#oc*r^)'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.200.40.138','localhost']
 
 
 # Application definition
@@ -51,10 +51,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'mysite.urls'
 
+
+STATICFILES_DIRS = [
+
+
+]
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,4 +124,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/assets/"
+STATICFILES_DIRS = (
+  'templates/assets/',
+)

@@ -1,0 +1,1 @@
+pythonw.exe manage.py runserver
