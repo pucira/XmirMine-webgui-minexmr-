@@ -29,6 +29,22 @@ def get_balance():
 	return balance / 1000000000000
 
 
+def get_price():
+	with urllib.request.urlopen(
+		"https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=BTC,USD,EUR"
+	) as url :
+		data = json.loads(url.read())
+		return float(data['USD'])
+
+def get_usdprice():
+	with urllib.request.urlopen(
+		"http://call.tgju.org/ajax.json"
+	) as url:
+		data=json.loads(url.read())
+		price=str(data['current']['price_dollar_soleymani']['p'])
+		price = price.replace(',', '')
+		return int(price)
+
 def api(request):
 	response = ''
 	response += '<p>Active Miners = '
@@ -36,9 +52,18 @@ def api(request):
 	accepted_shares = str(get_data()["results"]["accepted"])
 	response += activeminer + "</p><p>Accepted Shares = " + accepted_shares + "</p>"
 	response += "<p>Pending Payment = " + str(get_balance()) + "</p>"
+
+	response += "<p> XMRtoUSD : " + str(get_price()) + " USD </p>"
+
+	response += '<p> USDtoRIAL : ' + format(int(get_usdprice()), ',d') + ' </p>'
+
+	response += '<p> Charge : ' + format(get_price() * get_balance(), ".2f") + ' USD | '+str(format(int(get_price()*get_balance()*get_usdprice()), ',d')) +' RIAL</p>'
+
 	for workers in get_worker()['workers']:
 		workerid = re.split(r'[.](?![^][]*\])', workers[0])
 		response += "<p>" + workerid[2] + ' : [ Number Of Workers = ' + str(workers[2]) + " , Accepted Shares = "+str(workers[3]) +"]</p>"
+
+
 	return HttpResponse(response)
 
 
