@@ -53,11 +53,11 @@ def api(request):
 	response += activeminer + "</p><p>Accepted Shares = " + accepted_shares + "</p>"
 	response += "<p>Pending Payment = " + str(get_balance()) + "</p>"
 
-	response += "<p> XMRtoUSD : " + str(get_price()) + " USD </p>"
+	response += "<p>XMRtoUSD : " + str(get_price()) + " USD </p>"
 
-	response += '<p> USDtoRIAL : ' + format(int(get_usdprice()), ',d') + ' </p>'
+	response += '<p>USDtoRIAL : ' + format(int(get_usdprice()), ',d') + ' </p>'
 
-	response += '<p> Charge : ' + format(get_price() * get_balance(), ".2f") + ' USD | '+str(format(int(get_price()*get_balance()*get_usdprice()), ',d')) +' RIAL</p>'
+	response += '<p>Charge : ' + format(get_price() * get_balance(), ".2f") + ' USD | '+str(format(int(get_price()*get_balance()*get_usdprice()), ',d')) +' RIAL</p>'
 
 	for workers in get_worker()['workers']:
 		workerid = re.split(r'[.](?![^][]*\])', workers[0])
