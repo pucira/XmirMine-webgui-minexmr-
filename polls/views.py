@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 import urllib.request
+import urllib.error
 import json
 import re
 from django.template import loader
@@ -29,41 +30,66 @@ def get_balance():
 	return balance / 1000000000000
 
 
+
 def get_price():
 	with urllib.request.urlopen(
-		"https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=BTC,USD,EUR"
-	) as url :
+			"https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=BTC,USD,EUR"
+	) as url:
 		data = json.loads(url.read())
 		return float(data['USD'])
 
+
 def get_usdprice():
 	with urllib.request.urlopen(
-		"http://call.tgju.org/ajax.json"
+			"http://call.tgju.org/ajax.json"
 	) as url:
-		data=json.loads(url.read())
-		price=str(data['current']['price_dollar_soleymani']['p'])
+		data = json.loads(url.read())
+		try:
+			price = str(data['current']['price_dollar_rl']['p'])
+		except KeyError:
+			return int(0)
 		price = price.replace(',', '')
 		return int(price)
 
+
+
 def api(request):
+
+	try:
+		usd_price = get_usdprice()
+	except urllib.error.__all__:
+		usd_price = 0
+	try:
+		price = get_price()
+	except urllib.error.__all__:
+		price = 0
+	try:
+		balance = get_balance()
+	except urllib.error.__all__:
+		balance = 0
+	try:
+		activeminer = str(get_data()['miners']['now'])
+		accepted_shares = str(get_data()["results"]["accepted"])
+	except urllib.error.__all__:
+		activeminer = 0
+		accepted_shares = 0
 	response = ''
 	response += '<p>Active Miners = '
-	activeminer = str(get_data()['miners']['now'])
-	accepted_shares = str(get_data()["results"]["accepted"])
+
+
 	response += activeminer + "</p><p>Accepted Shares = " + accepted_shares + "</p>"
-	response += "<p>Pending Payment = " + str(get_balance()) + "</p>"
-
-	response += "<p>XMRtoUSD : " + str(get_price()) + " USD </p>"
-
-	response += '<p>USDtoRIAL : ' + format(int(get_usdprice()), ',d') + ' </p>'
-
-	response += '<p>Charge : ' + format(get_price() * get_balance(), ".2f") + ' USD | '+str(format(int(get_price()*get_balance()*get_usdprice()), ',d')) +' RIAL</p>'
-
-	for workers in get_worker()['workers']:
-		workerid = re.split(r'[.](?![^][]*\])', workers[0])
-		response += "<p>" + workerid[2] + ' : [ Number Of Workers = ' + str(workers[2]) + " , Accepted Shares = "+str(workers[3]) +"]</p>"
-
-
+	response += "<p>Pending Payment = " + str(balance) + "</p>"
+	response += "<p>XMRtoUSD : " + str(price) + " USD </p>"
+	response += '<p>USDtoRIAL : ' + format(int(usd_price), ',d') + ' </p>'
+	response += '<p>Charge : ' + format(price * balance, ".2f") + ' USD | ' + str(
+		format(int(price * balance * usd_price), ',d')) + ' RIAL</p>'
+	try:
+		for workers in get_worker()['workers']:
+			workerid = re.split(r'[.](?![^][]*\])', workers[0])
+			response += "<p>" + workerid[2] + ' : [ Number Of Workers = ' + str(workers[2]) + " , Accepted Shares = " + str(
+				workers[3]) + "]</p>"
+	except urllib.error.__all__:
+		print("Error")
 	return HttpResponse(response)
 
 
