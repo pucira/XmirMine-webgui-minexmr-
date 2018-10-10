@@ -49,10 +49,10 @@ def get_usdprice():
 		with urllib.request.urlopen(
 				"http://call.tgju.org/ajax.json"
 		) as url:
-			data = json.loads(url.read())
 			try:
+				data = json.loads(url.read())
 				price = str(data['current']['price_dollar_rl']['p'])
-			except KeyError:
+			except (KeyError, ValueError):
 				return int(0)
 			price = price.replace(',', '')
 			return int(price)
